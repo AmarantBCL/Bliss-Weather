@@ -4,6 +4,8 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -12,6 +14,7 @@ import com.amarant.apps.blissweather.databinding.ActivityMainBinding
 import com.amarant.apps.blissweather.model.CurrentResponseApi
 import com.amarant.apps.blissweather.viewmodel.WeatherViewModel
 import com.github.matteobattilana.weather.PrecipType
+import eightbitlab.com.blurview.RenderScriptBlur
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             var lon = 0.12
             var name = "London"
 
+            // Current temperature
             cityTxt.text = name
             progressBar.visibility = View.VISIBLE
             weatherViewModel.loadCurrentWeather(lat, lon, "metric").enqueue(object :
@@ -73,6 +77,21 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, t.toString(), Toast.LENGTH_SHORT).show()
                 }
             })
+
+
+
+            // Settings BlurView
+            var radius = 10f
+            val decorView = window.decorView
+            val rootView = (decorView.findViewById(android.R.id.content) as ViewGroup?)
+            val windowBackground = decorView.background
+            rootView?.let {
+                blurView.setupWith(it, RenderScriptBlur(this@MainActivity))
+                    .setFrameClearDrawable(windowBackground)
+                    .setBlurRadius(radius)
+                blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
+                blurView.clipToOutline = true
+            }
         }
     }
 
