@@ -15,8 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sunny_bg"
-        tools:src="@tools:sample/avatars" />
+        app:srcCompat="@drawable/sunny_bg" />
 
     <com.github.matteobattilana.weather.WeatherView
         android:id="@+id/weather_view"
@@ -33,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:src="@tools:sample/avatars"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/plus" />
@@ -74,7 +72,6 @@
                 android:id="@+id/imageView31"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@tools:sample/avatars"
                 app:srcCompat="@drawable/wind" />
 
             <TextView
@@ -150,7 +147,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="8dp"
-                    android:src="@tools:sample/avatars"
                     app:srcCompat="@drawable/arrow_up" />
 
                 <TextView
@@ -184,7 +180,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
-                    android:src="@tools:sample/avatars"
                     app:srcCompat="@drawable/arrow_down" />
             </LinearLayout>
         </LinearLayout>
@@ -200,7 +195,6 @@
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@tools:sample/avatars"
                 app:srcCompat="@drawable/humidity" />
 
             <TextView
