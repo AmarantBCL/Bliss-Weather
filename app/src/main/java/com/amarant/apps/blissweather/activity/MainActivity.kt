@@ -9,9 +9,12 @@ import android.view.ViewOutlineProvider
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.amarant.apps.blissweather.R
+import com.amarant.apps.blissweather.adapter.ForecastAdapter
 import com.amarant.apps.blissweather.databinding.ActivityMainBinding
 import com.amarant.apps.blissweather.model.CurrentResponseApi
+import com.amarant.apps.blissweather.model.ForecastResponseApi
 import com.amarant.apps.blissweather.viewmodel.WeatherViewModel
 import com.github.matteobattilana.weather.PrecipType
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -25,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val weatherViewModel: WeatherViewModel by viewModels()
     private val calendar by lazy { Calendar.getInstance() }
+    private val forecastAdapter by lazy { ForecastAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +62,12 @@ class MainActivity : AppCompatActivity() {
                             statusTxt.text = it.weather?.get(0)?.main ?: "-"
                             windTxt.text = it.wind?.speed?.let { Math.round(it).toString() } + "Km"
                             humidityTxt.text = it.main?.humidity.toString() + "%"
-                            currentTempTxt.text = it.main?.temp?.let { Math.round(it).toString() } + "°"
-                            maxTempTxt.text = it.main?.tempMax?.let { Math.round(it).toString() } + "°"
-                            minTempTxt.text = it.main?.tempMin?.let { Math.round(it).toString() } + "°"
+                            currentTempTxt.text =
+                                it.main?.temp?.let { Math.round(it).toString() } + "°"
+                            maxTempTxt.text =
+                                it.main?.tempMax?.let { Math.round(it).toString() } + "°"
+                            minTempTxt.text =
+                                it.main?.tempMin?.let { Math.round(it).toString() } + "°"
 
                             val drawable = if (isNightNow()) {
                                 R.drawable.night_bg
@@ -79,7 +86,6 @@ class MainActivity : AppCompatActivity() {
             })
 
 
-
             // Settings BlurView
             var radius = 10f
             val decorView = window.decorView
@@ -92,6 +98,37 @@ class MainActivity : AppCompatActivity() {
                 blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
                 blurView.clipToOutline = true
             }
+
+
+            // Forecast temperature
+            weatherViewModel.loadForecastWeather(lat, lon, "metric")
+                .enqueue(object : Callback<ForecastResponseApi> {
+                    override fun onResponse(
+                        call: Call<ForecastResponseApi>,
+                        response: Response<ForecastResponseApi>
+                    ) {
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            blurView.visibility = View.VISIBLE
+
+                            data?.let {
+                                forecastAdapter.differ.submitList(it.list)
+                                forecastView.apply {
+                                    layoutManager = LinearLayoutManager(
+                                        this@MainActivity,
+                                        LinearLayoutManager.HORIZONTAL,
+                                        false
+                                    )
+                                    adapter = forecastAdapter
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ForecastResponseApi>, t: Throwable) {
+
+                    }
+                })
         }
     }
 
@@ -100,45 +137,54 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDynamicallyWallpaper(icon: String): Int {
-        return when(icon.dropLast(1)) {
+        return when (icon.dropLast(1)) {
             "01" -> {
                 initWeatherView(PrecipType.CLEAR)
                 R.drawable.snow_bg
             }
+
             "02", "03", "04" -> {
                 initWeatherView(PrecipType.CLEAR)
                 R.drawable.cloudy_bg
             }
+
             "09", "10", "11" -> {
                 initWeatherView(PrecipType.RAIN)
                 R.drawable.rainy_bg
             }
+
             "13" -> {
                 initWeatherView(PrecipType.SNOW)
                 R.drawable.snow_bg
             }
+
             "50" -> {
                 initWeatherView(PrecipType.CLEAR)
                 R.drawable.haze_bg
             }
+
             else -> 0
         }
     }
 
     private fun setEffectRainSnow(icon: String) {
-        when(icon.dropLast(1)) {
+        when (icon.dropLast(1)) {
             "01" -> {
                 initWeatherView(PrecipType.CLEAR)
             }
+
             "02", "03", "04" -> {
                 initWeatherView(PrecipType.CLEAR)
             }
+
             "09", "10", "11" -> {
                 initWeatherView(PrecipType.RAIN)
             }
+
             "13" -> {
                 initWeatherView(PrecipType.SNOW)
             }
+
             "50" -> {
                 initWeatherView(PrecipType.CLEAR)
             }
