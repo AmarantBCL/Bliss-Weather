@@ -1,7 +1,8 @@
-package com.amarant.apps.blissweather
+package com.amarant.apps.blissweather.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.amarant.apps.blissweather.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
